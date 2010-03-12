@@ -230,7 +230,7 @@ static void MyCFWriteStreamCallback(CFWriteStreamRef stream, CFStreamEventType t
 	// This could give you -1: MAX(0, (0 - [term length] + 1));
 	
 	CFIndex i = MAX(0, (CFIndex)(bytesDone - [term length] + 1));
-	CFIndex j = MIN([term length] - 1, bytesDone);
+	CFIndex j = MIN((CFIndex)[term length] - 1, bytesDone);
 	
 	while(i < bytesDone)
 	{
@@ -247,7 +247,7 @@ static void MyCFWriteStreamCallback(CFWriteStreamRef stream, CFStreamEventType t
 	}
 	
 	if(maxLength > 0)
-		return MIN(result, (maxLength - bytesDone));
+		return MIN((CFIndex)result, ((CFIndex)maxLength - bytesDone));
 	else
 		return result;
 }
@@ -285,7 +285,7 @@ static void MyCFWriteStreamCallback(CFWriteStreamRef stream, CFStreamEventType t
 	
 	CFIndex i = MAX(0, (CFIndex)(bytesDone - numBytes - [term length] + 1));
 	
-	while(i + [term length] <= bytesDone)
+	while(i + (CFIndex)[term length] <= bytesDone)
 	{
 		const void *subBuffer = [buffer bytes] + i;
 		
@@ -2341,7 +2341,7 @@ Failed:
 - (void)readDataToData:(NSData *)data withTimeout:(NSTimeInterval)timeout maxLength:(CFIndex)length tag:(long)tag
 {
 	if(data == nil || [data length] == 0) return;
-	if(length >= 0 && length < [data length]) return;
+	if(length >= 0 && length < (CFIndex)[data length]) return;
 	if(theFlags & kForbidReadsWrites) return;
 	
 	NSMutableData *buffer = [[NSMutableData alloc] initWithLength:0];
@@ -2477,7 +2477,7 @@ Failed:
 	if([partialReadBuffer length] > 0)
 	{
 		// Determine the maximum amount of data to read
-		CFIndex bytesToRead = MIN(length, [partialReadBuffer length]);
+		CFIndex bytesToRead = MIN(length, (CFIndex)[partialReadBuffer length]);
 		
 		// Copy the bytes from the buffer
 		memcpy(buffer, [partialReadBuffer bytes], bytesToRead);
@@ -2630,7 +2630,7 @@ Failed:
 				else
 				{
 					// Done when (sized) buffer is full.
-					done = ([theCurrentRead->buffer length] == theCurrentRead->bytesDone);
+					done = ((CFIndex)[theCurrentRead->buffer length] == theCurrentRead->bytesDone);
 				}
 			}
 			// else readAllAvailable doesn't end until all readable is read.
@@ -2872,7 +2872,7 @@ Failed:
 				totalBytesWritten += bytesWritten;
 				
 				// Is packet done?
-				done = ([theCurrentWrite->buffer length] == theCurrentWrite->bytesDone);
+				done = ((CFIndex)[theCurrentWrite->buffer length] == theCurrentWrite->bytesDone);
 			}
 		}
 
